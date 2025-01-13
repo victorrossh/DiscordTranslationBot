@@ -47,8 +47,8 @@ DEFAULT_MESSAGES = {
     """
 }
 
+# Translate a message to target language using Gemini
 async def translate_message(message, target_language):
-    """Translate a message to target language using Gemini"""
     if target_language.lower() == 'english':
         return message
     
@@ -60,16 +60,16 @@ async def translate_message(message, target_language):
         print(f"Translation error: {e}")
         return message
 
+# Event triggered when bot is ready
 @bot.event
 async def on_ready():
-    """Event triggered when bot is ready"""
     print(DEFAULT_MESSAGES["bot_online"].format(bot.user.name))
     print(DEFAULT_MESSAGES["bot_id"].format(bot.user.id))
     print('-------------------')
 
+# Set user's interface language for bot messages
 @bot.command(name='wordwizard')
 async def set_interface_language(ctx):
-    """Set user's interface language for bot messages"""
     prompt = await translate_message(
         DEFAULT_MESSAGES["choose_language"],
         interface_languages.get(ctx.author.id, 'english')
@@ -95,9 +95,9 @@ async def set_interface_language(ctx):
         )
         await ctx.send(error_msg)
 
+# Set language for message translations
 @bot.command(name='settranslate')
 async def set_language(ctx, *, target_language):
-    """Set language for message translations"""
     try:
         prompt = f"Identify and return only the standardized English name for this language: {target_language}"
         
@@ -118,9 +118,9 @@ async def set_language(ctx, *, target_language):
         )
         await ctx.send(error_msg)
 
+# Event triggered on every message
 @bot.event
 async def on_message(message):
-    """Event triggered on every message"""
     await bot.process_commands(message)
     
     if message.author == bot.user:
@@ -137,9 +137,9 @@ async def on_message(message):
         except Exception as e:
             print(f"Translation error: {str(e)}")
 
+# Activate automatic translation in current channel
 @bot.command(name='activate')
 async def activate_channel(ctx):
-    """Activate automatic translation in current channel"""
     active_channels.add(ctx.channel.id)
     confirm_msg = await translate_message(
         DEFAULT_MESSAGES["translation_enabled"],
@@ -147,9 +147,9 @@ async def activate_channel(ctx):
     )
     await ctx.send(confirm_msg)
 
+# Deactivate automatic translation in current channel
 @bot.command(name='deactivate')
 async def deactivate_channel(ctx):
-    """Deactivate automatic translation in current channel"""
     active_channels.discard(ctx.channel.id)
     confirm_msg = await translate_message(
         DEFAULT_MESSAGES["translation_disabled"],
@@ -157,7 +157,7 @@ async def deactivate_channel(ctx):
     )
     await ctx.send(confirm_msg)
 
-#Show help message in user's interface language
+# Show help message in user's interface language
 @bot.command(name='helpword')
 async def show_commands(ctx):
     user_interface_language = interface_languages.get(ctx.author.id, 'english')
