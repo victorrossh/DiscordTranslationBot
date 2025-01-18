@@ -72,12 +72,12 @@ async def on_ready():
 async def set_interface_language(ctx):
     prompt = await translate_message(
         DEFAULT_MESSAGES["choose_language"],
-        interface_languages.get(ctx.author.id, 'english')
+        interface_languages.get(ctx.author.id, 'english') 
     )
-    await ctx.send(prompt)
+    await ctx.author.send(prompt)
     
     def check(m):
-        return m.author == ctx.author and m.channel == ctx.channel
+        return m.author == ctx.author and m.channel == ctx.author.dm_channel
     
     try:
         msg = await bot.wait_for('message', timeout=30.0, check=check)
@@ -87,13 +87,13 @@ async def set_interface_language(ctx):
             DEFAULT_MESSAGES["language_set"].format(msg.content),
             msg.content
         )
-        await ctx.send(confirm_msg)
+        await ctx.author.send(confirm_msg)
     except Exception as e:
         error_msg = await translate_message(
             DEFAULT_MESSAGES["language_error"],
             interface_languages.get(ctx.author.id, 'english')
         )
-        await ctx.send(error_msg)
+        await ctx.author.send(error_msg)
 
 # Set language for message translations
 @bot.command(name='settranslate')
@@ -172,10 +172,10 @@ async def show_commands(ctx):
     
     try:
         response = model.generate_content(prompt)
-        await ctx.send(response.text.strip().strip('"\''))
+        await ctx.author.send(response.text.strip().strip('"\''))
     except Exception as e:
         print(f"Error translating help message: {e}")
-        await ctx.send(DEFAULT_MESSAGES["help_message"])
+        await ctx.author.send(DEFAULT_MESSAGES["help_message"])
 
 # Start the bot
 bot.run(os.getenv('DISCORD_TOKEN'))
